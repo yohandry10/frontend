@@ -13,21 +13,50 @@ const modules = [
 ];
 
 // Preguntas de trivia
+// Preguntas de trivia
 const triviaGeneral = [
   { question: '¿Qué es la metodología ágil?', options: ['Un conjunto de prácticas', 'Una herramienta de programación'], correctAnswer: 'Un conjunto de prácticas' },
+  { question: '¿Qué significa la agilidad en los negocios?', options: ['Adaptabilidad rápida', 'Trabajar más rápido'], correctAnswer: 'Adaptabilidad rápida' },
+  { question: '¿Cuál es uno de los principios clave de la metodología ágil?', options: ['Documentación exhaustiva', 'Entrega continua de valor'], correctAnswer: 'Entrega continua de valor' },
+  { question: '¿Qué es un sprint?', options: ['Un ciclo corto de trabajo', 'Un equipo de desarrollo'], correctAnswer: 'Un ciclo corto de trabajo' },
+  { question: '¿Qué es la retrospectiva?', options: ['Una reunión para revisar el progreso', 'Una técnica de programación'], correctAnswer: 'Una reunión para revisar el progreso' },
+  { question: '¿Qué es un Product Owner?', options: ['El dueño de la empresa', 'Responsable del producto en un equipo ágil'], correctAnswer: 'Responsable del producto en un equipo ágil' },
+  { question: '¿Qué se busca con la metodología ágil?', options: ['Mejorar la productividad sin compromiso', 'Adaptación al cambio y entrega continua de valor'], correctAnswer: 'Adaptación al cambio y entrega continua de valor' },
+  { question: '¿Qué es un backlog?', options: ['Una lista de tareas pendientes', 'Un documento de requisitos'], correctAnswer: 'Una lista de tareas pendientes' },
+  { question: '¿Cuál es la importancia de la iteración en la metodología ágil?', options: ['Es irrelevante', 'Permite mejorar constantemente'], correctAnswer: 'Permite mejorar constantemente' },
+  { question: '¿Qué significa el manifiesto ágil?', options: ['Un conjunto de valores y principios para el desarrollo ágil', 'Un libro de gestión'], correctAnswer: 'Un conjunto de valores y principios para el desarrollo ágil' }
 ];
+
 const triviaModule1 = [
   { question: '¿Qué es Scrum?', options: ['Un marco ágil', 'Un idioma'], correctAnswer: 'Un marco ágil' },
+  { question: '¿Cuáles son los roles principales en Scrum?', options: ['Product Owner, Scrum Master, Equipo de desarrollo', 'Gerente, Subgerente, Asistente'], correctAnswer: 'Product Owner, Scrum Master, Equipo de desarrollo' },
+  { question: '¿Qué es el Scrum Master?', options: ['El facilitador del equipo Scrum', 'El jefe del equipo'], correctAnswer: 'El facilitador del equipo Scrum' },
+  { question: '¿Qué se realiza durante la reunión diaria (Daily Standup)?', options: ['Se revisan tareas pendientes', 'Se habla sobre el progreso y obstáculos del día'], correctAnswer: 'Se habla sobre el progreso y obstáculos del día' },
+  { question: '¿Qué es un artefacto en Scrum?', options: ['Una pieza de software', 'Un componente del marco Scrum, como el backlog'], correctAnswer: 'Un componente del marco Scrum, como el backlog' },
+  { question: '¿Qué es el sprint planning?', options: ['Una reunión para planificar el trabajo del sprint', 'Una técnica de estimación'], correctAnswer: 'Una reunión para planificar el trabajo del sprint' },
+  { question: '¿Qué se revisa en la revisión del sprint (Sprint Review)?', options: ['El producto desarrollado hasta el momento', 'Los problemas personales del equipo'], correctAnswer: 'El producto desarrollado hasta el momento' },
+  { question: '¿Cuál es el objetivo principal del Product Owner?', options: ['Maximizar el valor del producto', 'Controlar el equipo'], correctAnswer: 'Maximizar el valor del producto' },
+  { question: '¿Qué se espera lograr al final de cada sprint?', options: ['Un incremento de producto potencialmente entregable', 'Un plan detallado para el próximo sprint'], correctAnswer: 'Un incremento de producto potencialmente entregable' },
+  { question: '¿Qué es un sprint backlog?', options: ['Una lista de objetivos para el sprint actual', 'El plan de marketing'], correctAnswer: 'Una lista de objetivos para el sprint actual' }
 ];
+
 const triviaModule2 = [
   { question: '¿Qué es Design Thinking?', options: ['Una herramienta', 'Un enfoque para resolver problemas creativamente'], correctAnswer: 'Un enfoque para resolver problemas creativamente' },
+  { question: '¿Cuál es la primera etapa del Design Thinking?', options: ['Ideación', 'Empatizar'], correctAnswer: 'Empatizar' },
+  { question: '¿Qué se busca en la etapa de Empatizar?', options: ['Entender a los usuarios y sus necesidades', 'Crear prototipos'], correctAnswer: 'Entender a los usuarios y sus necesidades' },
+  { question: '¿Qué es la etapa de Definir en Design Thinking?', options: ['Identificar los problemas', 'Generar muchas ideas'], correctAnswer: 'Identificar los problemas' },
+  { question: '¿Qué es la ideación en Design Thinking?', options: ['Crear prototipos', 'Generar la mayor cantidad de ideas posibles'], correctAnswer: 'Generar la mayor cantidad de ideas posibles' },
+  { question: '¿Qué sucede en la etapa de Prototipar?', options: ['Se construyen soluciones tangibles', 'Se entrevistan usuarios'], correctAnswer: 'Se construyen soluciones tangibles' },
+  { question: '¿Qué se hace en la fase de Pruebas en Design Thinking?', options: ['Evaluar prototipos con los usuarios', 'Definir el problema'], correctAnswer: 'Evaluar prototipos con los usuarios' },
+  { question: '¿Qué es la mentalidad de crecimiento en el contexto del Design Thinking?', options: ['Una actitud para recibir feedback y mejorar', 'Una forma de evitar errores'], correctAnswer: 'Una actitud para recibir feedback y mejorar' },
+  { question: '¿Cómo ayuda Design Thinking a los equipos?', options: ['Promueve el pensamiento creativo y enfocado en el usuario', 'Establece reglas estrictas para evitar errores'], correctAnswer: 'Promueve el pensamiento creativo y enfocado en el usuario' },
+  { question: '¿Cuál es el objetivo principal del Design Thinking?', options: ['Desarrollar soluciones innovadoras centradas en las personas', 'Hacer más rápida la producción'], correctAnswer: 'Desarrollar soluciones innovadoras centradas en las personas' }
 ];
 
 const activityData = [
   { name: 'Enero', estudio: 30, examenes: 20 },
   { name: 'Febrero', estudio: 25, examenes: 15 },
 ];
-
 export default function Reports() {
   const [activeTab, setActiveTab] = useState('general');
   const [searchTerm, setSearchTerm] = useState('');
