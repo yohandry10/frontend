@@ -1,3 +1,4 @@
+// App.tsx
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
@@ -21,98 +22,99 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <div className="flex">
-          <Sidebar /> {/* Sidebar fijo a la izquierda */}
-          <div className="flex-1 pl-80 bg-gray-100 min-h-screen p-8"> {/* Ajuste con pl-80 para dar espacio al Sidebar */}
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-              {/* Protected Routes */}
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute allowedRoles={['mentor', 'student']}>
+          {/* Protected Routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute allowedRoles={['mentor', 'student']}>
+                {/* Layout para las rutas protegidas */}
+                <div className="flex">
+                  <Sidebar /> {/* Sidebar solo se muestra si se accede a una ruta protegida */}
+                  <div className="flex-1 pl-80 bg-gray-100 min-h-screen p-8">
                     <Dashboard />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<DashboardContent />} />
-                <Route
-                  path="reports"
-                  element={
-                    <ProtectedRoute allowedRoles={['mentor', 'student']}>
-                      <Reports />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="sessions"
-                  element={
-                    <ProtectedRoute allowedRoles={['student', 'mentor']}>
-                      <MySessions />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="forum"
-                  element={
-                    <ProtectedRoute allowedRoles={['student', 'mentor']}>
-                      <Forum />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="chat"
-                  element={
-                    <ProtectedRoute allowedRoles={['student', 'mentor']}>
-                      <Chat />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="match"
-                  element={
-                    <ProtectedRoute allowedRoles={['student', 'mentor']}>
-                      <Match />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="profile"
-                  element={
-                    <ProtectedRoute allowedRoles={['student', 'mentor']}>
-                      <Profile />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="edit-profile" // Añadir la ruta para editar el perfil
-                  element={
-                    <ProtectedRoute allowedRoles={['student', 'mentor']}>
-                      <EditProfile />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="notifications"
-                  element={
-                    <ProtectedRoute allowedRoles={['student', 'mentor']}>
-                      <Notifications />
-                    </ProtectedRoute>
-                  }
-                />
-              </Route>
+                  </div>
+                </div>
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<DashboardContent />} />
+            <Route
+              path="reports"
+              element={
+                <ProtectedRoute allowedRoles={['mentor', 'student']}>
+                  <Reports />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="sessions"
+              element={
+                <ProtectedRoute allowedRoles={['student', 'mentor']}>
+                  <MySessions />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="forum"
+              element={
+                <ProtectedRoute allowedRoles={['student', 'mentor']}>
+                  <Forum />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="chat"
+              element={
+                <ProtectedRoute allowedRoles={['student', 'mentor']}>
+                  <Chat />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="match"
+              element={
+                <ProtectedRoute allowedRoles={['student', 'mentor']}>
+                  <Match />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="profile"
+              element={
+                <ProtectedRoute allowedRoles={['student', 'mentor']}>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="edit-profile"
+              element={
+                <ProtectedRoute allowedRoles={['student', 'mentor']}>
+                  <EditProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="notifications"
+              element={
+                <ProtectedRoute allowedRoles={['student', 'mentor']}>
+                  <Notifications />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
 
-              {/* Unauthorized Route */}
-              <Route path="/unauthorized" element={<Unauthorized />} />
+          {/* Unauthorized Route */}
+          <Route path="/unauthorized" element={<Unauthorized />} />
 
-              {/* Fallback Route */}
-              <Route path="*" element={<Navigate to="/login" replace />} />
-            </Routes>
-          </div>
-        </div>
+          {/* Fallback Route */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
       </BrowserRouter>
     </AuthProvider>
   );
