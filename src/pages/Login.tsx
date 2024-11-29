@@ -66,7 +66,7 @@ export default function Login() {
     <div className="min-h-screen flex bg-pink-200">
       <div className="hidden md:flex w-1/2 items-center justify-center bg-pink-200">
         <img
-          src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80"
+          src="/src/assets/fondo.jpeg"
           alt="Imagen de bienvenida"
           className="w-full h-full object-cover"
         />
