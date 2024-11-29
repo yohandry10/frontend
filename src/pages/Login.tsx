@@ -2,6 +2,7 @@ import { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, GraduationCap, UserCog } from 'lucide-react';
 import { AuthContext } from '../contexts/AuthContext';
+import fondoImage from '../assets/fondo.jpeg'; // Importación de la imagen
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -37,11 +38,10 @@ export default function Login() {
       setLoading(false);
 
       if (response.ok) {
-        // Create a user object that matches our interface
         const userData = {
           email,
           role: data.role,
-          name: email.split('@')[0], // Temporary name from email until we get it from backend
+          name: email.split('@')[0],
         };
         
         login(data.role, userData, data.token);
@@ -66,7 +66,7 @@ export default function Login() {
     <div className="min-h-screen flex bg-pink-200">
       <div className="hidden md:flex w-1/2 items-center justify-center bg-pink-200">
         <img
-          src="/src/assets/fondo.jpeg"
+          src={fondoImage}
           alt="Imagen de bienvenida"
           className="w-full h-full object-cover"
         />
