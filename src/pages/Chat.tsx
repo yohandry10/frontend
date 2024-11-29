@@ -1,4 +1,5 @@
-import { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { useParams } from 'react-router-dom';
 import { Send } from 'lucide-react';
 import { AuthContext } from '../contexts/AuthContext';
 import io from 'socket.io-client';
@@ -16,21 +17,24 @@ interface Message {
 
 const socket = io(`${import.meta.env.VITE_API_URL}`); // Conectar con el backend usando la URL de la API
 
-export default function Chat() {
+export default function ChatWindow() {
+  const { userId } = useParams<{ userId: string }>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    // Recibir mensajes desde el backend
-    socket.on('message', (message: Message) => {
+    if (!userId) return;
+
+    // Recibir mensajes desde el backend para el usuario específico
+    socket.on(`message-${userId}`, (message: Message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
     return () => {
-      socket.off('message'); // Limpiar la suscripción cuando el componente se desmonte
+      socket.off(`message-${userId}`); // Limpiar la suscripción cuando el componente se desmonte
     };
-  }, []);
+  }, [userId]);
 
   const handleSubmit = () => {
     if (!user || newMessage.trim() === '') return;
@@ -46,8 +50,8 @@ export default function Chat() {
       isSent: true,
     };
 
-    // Emitir el mensaje al backend
-    socket.emit('sendMessage', message);
+    // Emitir el mensaje al backend para el usuario específico
+    socket.emit(`sendMessage-${userId}`, message);
     setMessages((prevMessages) => [...prevMessages, message]);
     setNewMessage('');
   };
@@ -55,7 +59,7 @@ export default function Chat() {
   return (
     <div className="h-[calc(100vh-7rem)] flex flex-col bg-white shadow-lg rounded-lg">
       <div className="p-4 border-b">
-        <h2 className="text-lg font-semibold">Messages</h2>
+        <h2 className="text-lg font-semibold">Chat</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">

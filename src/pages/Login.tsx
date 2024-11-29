@@ -2,35 +2,30 @@ import { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, GraduationCap, UserCog } from 'lucide-react';
 import { AuthContext } from '../contexts/AuthContext';
-import fondo from '../assets/fondo.jpeg';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'student' | 'mentor' | null>(null);
-  const [loading, setLoading] = useState(false); // Estado para manejar la carga
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Verificar si todos los campos están completos
-    console.log('Datos del formulario:', { name, email, password, role });
-
     if (!email || !password || !role) {
       alert('Por favor completa todos los campos y selecciona un rol');
       return;
     }
 
-    // Verifica que la URL del API esté configurada
     if (!import.meta.env.VITE_API_URL) {
       console.error('VITE_API_URL no está definido en el entorno');
       alert('Error en la configuración del servidor');
       return;
     }
 
-    setLoading(true); // Activa el estado de carga
+    setLoading(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
         method: 'POST',
@@ -39,12 +34,18 @@ export default function Login() {
       });
 
       const data = await response.json();
-      setLoading(false); // Desactiva el estado de carga
+      setLoading(false);
 
       if (response.ok) {
-        login(role, data.token); // Guarda el rol y el token en el contexto
-        localStorage.setItem('token', data.token); // Guarda el token en localStorage
-        navigate('/'); // Redirige al dashboard
+        // Create a user object that matches our interface
+        const userData = {
+          email,
+          role: data.role,
+          name: email.split('@')[0], // Temporary name from email until we get it from backend
+        };
+        
+        login(data.role, userData, data.token);
+        navigate('/');
       } else {
         if (response.status === 401) {
           alert('Credenciales incorrectas');
@@ -55,18 +56,17 @@ export default function Login() {
         }
       }
     } catch (err) {
-      setLoading(false); // Desactiva el estado de carga
+      setLoading(false);
       console.error('Error al conectar con el backend:', err);
       alert('Error en la conexión con el servidor');
     }
-};
-  
+  };
 
   return (
     <div className="min-h-screen flex bg-pink-200">
       <div className="hidden md:flex w-1/2 items-center justify-center bg-pink-200">
         <img
-          src={fondo}
+          src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80"
           alt="Imagen de bienvenida"
           className="w-full h-full object-cover"
         />
@@ -84,10 +84,11 @@ export default function Login() {
             <button
               type="button"
               onClick={() => setRole('student')}
-              className={`flex-1 flex items-center justify-center gap-2 p-4 rounded-lg border-2 transition-all ${role === 'student'
-                ? 'border-purple-600 bg-purple-50 text-purple-600'
-                : 'border-gray-300 hover:border-purple-400'
-                }`}
+              className={`flex-1 flex items-center justify-center gap-2 p-4 rounded-lg border-2 transition-all ${
+                role === 'student'
+                  ? 'border-purple-600 bg-purple-50 text-purple-600'
+                  : 'border-gray-300 hover:border-purple-400'
+              }`}
             >
               <GraduationCap className="h-5 w-5" />
               <span className="font-medium">Estudiante</span>
@@ -95,10 +96,11 @@ export default function Login() {
             <button
               type="button"
               onClick={() => setRole('mentor')}
-              className={`flex-1 flex items-center justify-center gap-2 p-4 rounded-lg border-2 transition-all ${role === 'mentor'
-                ? 'border-purple-600 bg-purple-50 text-purple-600'
-                : 'border-gray-300 hover:border-purple-400'
-                }`}
+              className={`flex-1 flex items-center justify-center gap-2 p-4 rounded-lg border-2 transition-all ${
+                role === 'mentor'
+                  ? 'border-purple-600 bg-purple-50 text-purple-600'
+                  : 'border-gray-300 hover:border-purple-400'
+              }`}
             >
               <UserCog className="h-5 w-5" />
               <span className="font-medium">Mentor</span>
@@ -136,9 +138,10 @@ export default function Login() {
             </div>
             <button
               type="submit"
-              className="w-full py-3 px-4 border border-transparent rounded-lg shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
+              disabled={loading}
+              className="w-full py-3 px-4 border border-transparent rounded-lg shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Iniciar sesión como {role === 'student' ? 'Estudiante' : role === 'mentor' ? 'Mentor' : 'Usuario'}
+              {loading ? 'Iniciando sesión...' : `Iniciar sesión como ${role === 'student' ? 'Estudiante' : role === 'mentor' ? 'Mentor' : 'Usuario'}`}
             </button>
 
             <div className="flex items-center justify-between">
@@ -173,28 +176,19 @@ export default function Login() {
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
                       <path
                         fill="#FFC107"
-                        d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8
-                        c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039
-                        l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20
-                        c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
+                        d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
                       />
                       <path
                         fill="#FF3D00"
-                        d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12
-                        c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4
-                        C16.318,4,9.656,8.337,6.306,14.691z"
+                        d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
                       />
                       <path
                         fill="#4CAF50"
-                        d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238
-                        C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946
-                        l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
+                        d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
                       />
                       <path
                         fill="#1976D2"
-                        d="M43.611,20.083H42V20H24v8h11.303
-                        c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C36.971,39.205,44,34,44,24
-                        C44,22.659,43.862,21.35,43.611,20.083z"
+                        d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
                       />
                     </svg>
                   </div>

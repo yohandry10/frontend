@@ -1,10 +1,12 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
+import { ArrowLeft, Save } from 'lucide-react';
 
 export default function EditProfile() {
   const navigate = useNavigate();
-  const { user, setUser } = useContext(AuthContext); // Necesita un setter de user en el contexto para actualizarlo
+  const { user, updateUser } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState(false);
   const [profile, setProfile] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -13,110 +15,110 @@ export default function EditProfile() {
     bio: user?.bio || '',
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProfile((prevProfile) => ({
-      ...prevProfile,
+    setProfile((prev) => ({
+      ...prev,
       [name]: value,
     }));
   };
 
   const handleSaveProfile = async () => {
+    setIsLoading(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/profile/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`, // Asumiendo que se guarda el token en localStorage
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify(profile),
       });
 
       if (response.ok) {
-        const updatedUser = await response.json();
-        setUser(updatedUser); // Actualiza el contexto con los nuevos datos
-        navigate('/profile'); // Navega al perfil después de guardar los cambios
+        const { user: updatedUser } = await response.json();
+        // Merge the backend response with our local profile data
+        const mergedData = {
+          ...updatedUser,
+          phone: profile.phone,
+          location: profile.location,
+          bio: profile.bio,
+        };
+        updateUser(mergedData);
+        navigate('/profile');
       } else {
-        console.error('Error al actualizar el perfil:', response.statusText);
-        alert('No se pudo actualizar el perfil.');
+        const error = await response.json();
+        throw new Error(error.message || 'Error al actualizar el perfil');
       }
     } catch (error) {
-      console.error('Error al conectar con el backend:', error);
-      alert('Error al conectar con el servidor.');
+      console.error('Error:', error);
+      alert(error instanceof Error ? error.message : 'Error al actualizar el perfil');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Editar Perfil</h1>
+    <div className="max-w-2xl mx-auto mt-10 px-4">
+      <div className="flex items-center gap-4 mb-6">
+        <button
+          onClick={() => navigate('/profile')}
+          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+        >
+          <ArrowLeft className="w-6 h-6" />
+        </button>
+        <h1 className="text-2xl font-bold text-gray-900">Editar Perfil</h1>
+      </div>
 
-      <div className="bg-white shadow rounded-lg p-6 space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Nombre</label>
-          <input
-            type="text"
-            name="name"
-            value={profile.name}
-            onChange={handleInputChange}
-            className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
-          />
-        </div>
+      <div className="bg-white shadow rounded-lg p-6 space-y-6">
+        {[
+          { label: 'Nombre', name: 'name' },
+          { label: 'Email', name: 'email', type: 'email' },
+          { label: 'Teléfono', name: 'phone', type: 'tel' },
+          { label: 'Ubicación', name: 'location' },
+          { label: 'Biografía', name: 'bio', multiline: true },
+        ].map(({ label, name, type = 'text', multiline }) => (
+          <div key={name} className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              {label}
+            </label>
+            {multiline ? (
+              <textarea
+                name={name}
+                value={profile[name]}
+                onChange={handleInputChange}
+                rows={4}
+                className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 resize-none"
+              />
+            ) : (
+              <input
+                type={type}
+                name={name}
+                value={profile[name]}
+                onChange={handleInputChange}
+                className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
+              />
+            )}
+          </div>
+        ))}
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Correo Electrónico</label>
-          <input
-            type="email"
-            name="email"
-            value={profile.email}
-            onChange={handleInputChange}
-            className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Teléfono</label>
-          <input
-            type="text"
-            name="phone"
-            value={profile.phone}
-            onChange={handleInputChange}
-            className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Ubicación</label>
-          <input
-            type="text"
-            name="location"
-            value={profile.location}
-            onChange={handleInputChange}
-            className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Biografía</label>
-          <textarea
-            name="bio"
-            value={profile.bio}
-            onChange={handleInputChange}
-            className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
-            rows={4}
-          />
-        </div>
-
-        <div className="flex justify-end space-x-3">
+        <div className="flex justify-end space-x-3 pt-6 border-t">
           <button
             onClick={() => navigate('/profile')}
-            className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
           >
             Cancelar
           </button>
           <button
             onClick={handleSaveProfile}
-            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            disabled={isLoading}
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
+            {isLoading ? (
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
             Guardar Cambios
           </button>
         </div>

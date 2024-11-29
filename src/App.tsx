@@ -9,7 +9,8 @@ import Register from './pages/Register';
 import Reports from './pages/Reports';
 import MySessions from './pages/MySessions';
 import Forum from './pages/Forum';
-import Chat from './pages/Chat';
+import ChatList from './pages/ChatList';
+import ChatWindow from './pages/ChatWindow';
 import Profile from './pages/Profile';
 import Match from './pages/Match';
 import Notifications from './pages/Notifications';
@@ -71,7 +72,15 @@ export default function App() {
               path="chat"
               element={
                 <ProtectedRoute allowedRoles={['student', 'mentor']}>
-                  <Chat />
+                  <ChatList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="chat/:userId"
+              element={
+                <ProtectedRoute allowedRoles={['student', 'mentor']}>
+                  <ChatWindow />
                 </ProtectedRoute>
               }
             />

@@ -1,4 +1,3 @@
-
 import { Bell, Search } from 'lucide-react';
 import { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -7,14 +6,14 @@ import { AuthContext } from '../contexts/AuthContext';
 export default function Header() {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const { logout } = useContext(AuthContext);
+  const { logout, user } = useContext(AuthContext);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
-
+  const displayName = user?.name || 'Usuario';
   
   return (
     <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-6">
@@ -37,6 +36,11 @@ export default function Header() {
           <Bell className="h-6 w-6" />
           <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white" />
         </button>
+
+        {/* User name display */}
+        <span className="text-gray-700 font-medium">
+          Hola, {displayName}
+        </span>
 
         {/* Menú de perfil */}
         <div className="relative">
