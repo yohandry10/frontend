@@ -1,4 +1,5 @@
-import { useState, useContext } from 'react';
+// Login.tsx
+import { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, GraduationCap, UserCog } from 'lucide-react';
 import { AuthContext } from '../contexts/AuthContext';
@@ -12,6 +13,15 @@ export default function Login() {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('email');
+    const savedRole = localStorage.getItem('role');
+    if (savedEmail && savedRole) {
+      setEmail(savedEmail);
+      setRole(savedRole as 'student' | 'mentor');
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -20,45 +30,29 @@ export default function Login() {
       return;
     }
 
-    if (!import.meta.env.VITE_API_URL) {
-      console.error('VITE_API_URL no está definido en el entorno');
-      alert('Error en la configuración del servidor');
-      return;
-    }
-
     setLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, role }),
-      });
-
-      const data = await response.json();
-      setLoading(false);
-
-      if (response.ok) {
+      // Simular autenticación utilizando LocalStorage
+      const storedPassword = localStorage.getItem(`password_${email}`);
+      if (storedPassword === password) {
         const userData = {
           email,
-          role: data.role,
+          role,
           name: email.split('@')[0],
         };
-        
-        login(data.role, userData, data.token);
+
+        localStorage.setItem('email', email);
+        localStorage.setItem('role', role);
+        login(role, userData, 'dummy_token');
         navigate('/');
       } else {
-        if (response.status === 401) {
-          alert('Credenciales incorrectas');
-        } else if (response.status === 500) {
-          alert('Error en el servidor, intenta más tarde');
-        } else {
-          alert(data.message || 'Error al iniciar sesión');
-        }
+        setLoading(false);
+        alert('Error al iniciar sesión: Credenciales incorrectas');
       }
     } catch (err) {
       setLoading(false);
-      console.error('Error al conectar con el backend:', err);
-      alert('Error en la conexión con el servidor');
+      console.error('Error al conectar con LocalStorage:', err);
+      alert('Error en la conexión con LocalStorage');
     }
   };
 

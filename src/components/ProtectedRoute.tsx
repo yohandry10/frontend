@@ -1,4 +1,4 @@
-// components/ProtectedRoute.tsx
+// ProtectedRoute.tsx
 import { Navigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
-  const { isAuthenticated, role } = useContext(AuthContext);
+  const { isAuthenticated, user } = useContext(AuthContext);
 
   // Verificar si el usuario está autenticado
   if (!isAuthenticated) {
@@ -17,7 +17,7 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
   }
 
   // Verificar si el rol del usuario está permitido
-  if (allowedRoles && role && !allowedRoles.includes(role)) {
+  if (allowedRoles && user && !allowedRoles.includes(user.role)) {
     return <Navigate to="/unauthorized" replace />;
   }
 

@@ -14,7 +14,7 @@ import ChatWindow from './pages/ChatWindow';
 import Profile from './pages/Profile';
 import Match from './pages/Match';
 import Notifications from './pages/Notifications';
-import EditProfile from './pages/EditProfile'; // Importar el nuevo componente de edición de perfil
+import EditProfile from './pages/EditProfile';
 import DashboardContent from './pages/DashboardContent';
 import Unauthorized from './pages/Unauthorized';
 import Sidebar from './components/Sidebar';
@@ -33,9 +33,8 @@ export default function App() {
             path="/"
             element={
               <ProtectedRoute allowedRoles={['mentor', 'student']}>
-                {/* Layout para las rutas protegidas */}
                 <div className="flex">
-                  <Sidebar /> {/* Sidebar solo se muestra si se accede a una ruta protegida */}
+                  <Sidebar />
                   <div className="flex-1 pl-80 bg-gray-100 min-h-screen p-8">
                     <Dashboard />
                   </div>
